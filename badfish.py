@@ -14,11 +14,20 @@ class MissFrame:
     df: Pandas DataFrame, required.
         The DataFrame which needs to be analysed for missing values.
 
-    #TODO: Sampling should be sent to individual methods. Does doing mean of correlation lets remain
-    results to be consistent.
+    Attributes:
+    ----------
+    data: Pandas DataFrame, The original data.
 
+    miss_frame: Pandas DataFrame, Boolean mask wherever data is missing. 
+
+
+    Examples
+    --------
+    >>> df = pd.read_csv('demo.csv')
+    >>> mf = bf.MissFrame(df)
     '''
-    plot = plotting.plot
+    
+    # plot = plotting.plot
 
 
 
@@ -34,15 +43,15 @@ class MissFrame:
         Parameters:
         -----------
         where: list of columns
-            Select subset of the DataFrame where these columns are missing.
-            If None, entire DataFrame is considered.
+            Select subset of the DataFrame to work on where specified columns 
+            are missing. If None, entire DataFrame is considered.
 
         how: {'all'|'any'} 
             Whether all or any of the columns specified in where clause should
             be missing.
 
         columns: list of columns
-            list of columns to be returned as subset.
+            Columns the final data should retain.
 
         """
 
@@ -59,53 +68,29 @@ class MissFrame:
         else:
             return self.miss_frame[columns]
 
-    def _group_dat(self, group, how, columns):
-        """
-        Returns a subset of missframe based on conditions.
+
+    def counts(self, columns = None, where = None, , how = 'all', norm = False, ascending = False):
+        """ 
+        Returns the count of missing values per column.
 
         Parameters:
         -----------
         where: list of columns
-            Select subset of the DataFrame where these columns are missing.
-            If None, entire DataFrame is considered.
+            Select subset of the DataFrame to work on where specified columns 
+            are already missing. If None, entire DataFrame is considered.
 
         how: {'all'|'any'} 
             Whether all or any of the columns specified in where clause should
             be missing.
 
         columns: list of columns
-            list of columns to be returned as subset.
+            Columns the final data should retain.
 
-        """
+        Returns:
+        -------
+        mf_sum : DataFrame
+            Count of missing values for each column.
 
-
-
-        if columns == None:
-            columns = self.miss_frame.columns
-
-        if where != None:
-            if how == 'all':
-                return self.miss_frame[columns].loc[self.miss_frame[where].all(axis = 1)]
-            else:
-                return self.miss_frame[columns].loc[self.miss_frame[where].any(axis = 1)]
-        else:
-            return self.miss_frame[columns]
-        
-
-
-    def counts(self, where = None, columns = None, how = 'all', norm = False, ascending = False):
-        """ 
-        Basic counts the number of missing values.
-
-        Parameters
-        ----------
-        where: list of columns, defult None
-            Select subset of the DataFrame where these columns are missing.
-            If None, entire DataFrame is considered.
-
-        columns: column label or sequence of labels, optional
-            Only consider certain columns for identifying missing values, by
-            default use all of the columns
         """
 
         mf_ = self._masked_missframe(where = where, columns = columns, how = how)
@@ -124,23 +109,28 @@ class MissFrame:
 
     def corr(self, where = None, columns = None, how = 'all'):
         """ 
-        Correlation between columns based on missing values. 
+        Correlation between columns based on boolean representing whether value is
+        missing or not. High correlation could represent values missing or being present
+        at the same time. 
 
-        Parameters
-        ----------
-        where: list of columns, defult None
-            Select subset of the DataFrame where these columns are missing.
-            If None, entire DataFrame is considered.
+        Parameters:
+        -----------
+        where: list of columns
+            Select subset of the DataFrame to work on where specified columns 
+            are already missing. If None, entire DataFrame is considered.
 
-        columns: column label or sequence of labels, optional
-            Only consider certain columns in final result, by
-            default use all of the columns.
-
-        how: {'all'|'any'}
+        how: {'all'|'any'} 
             Whether all or any of the columns specified in where clause should
-            be missing. Not used if where is set as None. 
+            be missing.
+
+        columns: list of columns
+            Columns the final DataFrame should retain.
+
+        Returns:
+        -------
+        corr_ : DataFrame
+            Correlation matrix
         
-        #TODO: Some way to see only highly correlated pairs other than visualizing.
         """
         
         mf_ = self._masked_missframe(where = where, columns = columns, how = how)
@@ -154,11 +144,23 @@ class MissFrame:
     def pattern(self, where = None, columns = None, how ='any', norm = True, threshold = 0.10, ascending = False):
         """
         Shows the frequency of possible patterns of missing and non-missing values.
+        
+        Use mf.plot to see the same table visualized. Plot is inspired by VIM package in R.
+        True represents Missing and False represent data being present.
 
-        Plot is inspired by VIM package in R.
- 
         Parameters:
-        ----------
+        -----------
+        where: list of columns
+            Select subset of the DataFrame to work on where specified columns 
+            are already missing. If None, entire DataFrame is considered.
+
+        how: {'all'|'any'} 
+            Whether all or any of the columns specified in where clause should
+            be missing.
+
+        columns: list of columns
+            Columns the final DataFrame should retain.
+
         norm: bool, default True
             Whether frequency should be normed. Normalized by count of rows in final
             DataFrame after masking by where clause.
@@ -166,6 +168,12 @@ class MissFrame:
         threshold: float or int, default 0.10
             Only show patterns whose frequency passes a certain threshold.
 
+        
+        Returns:
+        -------
+        pat_ : DataFrame
+            Counts for different combinations of missing data. 
+        
         """
 
         mf_ = self._masked_missframe(where = where, columns = columns, how = how)
@@ -192,25 +200,41 @@ class MissFrame:
         
         pat_ = pat_.reset_index()
         return pat_ 
-
-    # From plotting.py
    
 
-    def cohort(self, group, columns = None, how = 'any'):
+    def cohort(self, group, columns = None, how='any'):
         """
-        Tries to find signigicant group differences between
-        values of columns other than the ones specified in the where clause.
-        Group made on the basis of missing or non-missing of columns in where clause.
+        Tries to find signigicant group differences between values of
+        columns other than the ones specified in the group clause. Group
+        made on the basis of missing or non-missing of columns in the group clause.
 
+        Parameters:
+        -----------
+        group: list of columns
+            Columns on the basis of which groups will be made.
+
+        how: {'all'|'any'} 
+            Whether all or any of the columns specified in group clause should
+            be missing.
+
+        columns: list of columns
+            Columns the final DataFrame should retain.
+
+        Returns:
+        -------
+        out : DataFrame
+            Generated statistics for the group differences.
         """
 
         #TODO: Add warning class about the useful ness of this test. 
 
-        group_ = self.miss_frame[group].all(axis = 1)
-        
+        if how == 'all':
+            group_ = self.miss_frame[where].all(axis = 1)
+        if how == 'any':
+            group_ = self.miss_frame[where].any(axis = 1)
+
         if columns == None:
             columns = self.data.columns
-        # data = pd.concat(self.data, group_, axis = 1)
 
         order_col =  ['Column', 
             'Non-null values in Group (missing)',
@@ -239,7 +263,7 @@ class MissFrame:
             results['Non-null values in Group (missing)'] =  missing.dropna().shape[0]
             results['Non-null values in Group (non-missing)'] = nonmissing.dropna().shape[0]
             
-            results['Mean - Group (missing)'] = non-missingng.mean()
+            results['Mean - Group (missing)'] = missing.mean()
             results['Mean - Group (non-missing)'] =  nonmissing.mean()
 
             two_sample = stats.ttest_ind(missing, nonmissing, nan_policy = 'omit',axis = 0)
@@ -256,7 +280,8 @@ class MissFrame:
             results_list.append(results)
 
 
-        return pd.DataFrame(results_list)[order_col]
+        out = pd.DataFrame(results_list)[order_col]
+        return out
 
     def frequency_item_set(self, columns = None, support = 0.1, rules = False, confidence = 0.8, engine = 'pymining'):
         """
@@ -280,6 +305,12 @@ class MissFrame:
         engine: {'pymining'}
             Only one engine is being supported right now.
         
+       
+        Returns:
+        -------
+        item_sets_df, rules_df : DataFrame, DataFrame
+            Tabulated results for itemsets and association rules mined. 
+            
         """ 
 
         from pymining import itemmining, assocrules
@@ -323,7 +354,7 @@ class MissFrame:
         return item_sets_df, rules_df
 
 
-    def get_best_column_set():
+    def get_best_column_set(self):
         """
         Tabulates best possible cost to include each column.
         some columns having missing values spread accross the dataframe randomly,
