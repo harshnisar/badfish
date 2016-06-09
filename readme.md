@@ -43,7 +43,7 @@ The same can be visualized in the form of a plot (inspired by VIM package in R)
 
     Example plot:
 
-    <img src="https://raw.githubusercontent.com/harshnisar/badfish/master/images/patternplot.png" width=300 />
+<img src="https://raw.githubusercontent.com/harshnisar/badfish/master/images/patternplot.png" width=300 />
 
 Note: Both `where` and `how` can be used in this method.
 
