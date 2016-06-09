@@ -1,4 +1,4 @@
-# Badfish - Missing data munging library
+# Badfish - A missing data wrangling library in Python
 
 Badfish introduces MissFrame, a wrapper over `pandas` `DataFrame`, to wrangle through and investigate missing data. It opens an easy to
 use API to summarize and explore patterns in missingness. 
@@ -43,7 +43,7 @@ The same can be visualized in the form of a plot (inspired by VIM package in R)
 
     Example plot:
 
-<img src="https://raw.githubusercontent.com/harshnisar/badfish/master/images/patternplot.png" width=300 />
+<img src="https://raw.githubusercontent.com/harshnisar/badfish/master/images/patternplot.png" width=500 />
 
 Note: Both `where` and `how` can be used in this method.
 
