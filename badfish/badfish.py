@@ -126,10 +126,10 @@ class MissFrame:
         if norm == True:
             #TODO: Not sure which counts should come here. mf_ or miss_frame
             mf_sum_normed = mf_sum/mf_.count()
-            mf_sum_normed.sort(ascending = ascending)
+            mf_sum_normed.sort_values(ascending=ascending, inplace=True)
             return mf_sum_normed
         else:
-            mf_sum.sort(ascending = ascending)
+            mf_sum.sort_values(ascending=ascending, inplace=True)
             return mf_sum
 
 
