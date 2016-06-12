@@ -255,9 +255,9 @@ class MissFrame:
         #TODO: Add warning class about the useful ness of this test. 
 
         if how == 'all':
-            group_ = self.miss_frame[where].all(axis = 1)
+            group_ = self.miss_frame[group].all(axis = 1)
         if how == 'any':
-            group_ = self.miss_frame[where].any(axis = 1)
+            group_ = self.miss_frame[group].any(axis = 1)
 
         if columns == None:
             columns = self.data.columns
