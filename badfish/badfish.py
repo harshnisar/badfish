@@ -29,7 +29,7 @@ import seaborn as sns
 import numpy as np
 from scipy import stats
 from collections import OrderedDict
-import plotting
+from .plotting import plot as bfplot
 
 class MissFrame:
     '''
@@ -53,7 +53,7 @@ class MissFrame:
     >>> mf = bf.MissFrame(df)
     '''
     
-    plot = plotting.plot
+    plot = bfplot
 
 
 
@@ -321,12 +321,14 @@ class MissFrame:
         
         support: float, default 0.1
             Minimum support to use while item set mining. Too small values can break memory.
+            Support should be greater than zero and less than 1.
 
         rules: bool, default True
             Whether association rules should be mined. If True, method returns two_sample
             dataframes instead of one.
 
         confidence: float, default
+            Minimum confidence for rules being mined. Should be between 0 and 1.
 
         engine: {'pymining'}
             Only one engine is being supported right now.
@@ -341,6 +343,16 @@ class MissFrame:
 
         from pymining import itemmining, assocrules
 
+        if support<=0 or support>1: #support should be between one and zero.
+            print('Support has to be between 0 and 1')
+            return
+
+        if confidence<0 or confidence>1: #confidence can be zero.
+            print('Confidence has to be between 0 and 1')
+            return
+            
+
+
         mf_ = self._masked_missframe(where = None, columns = columns, how = 'any')
         
         # Converting all missing values to 1, and non-missing to nan.
@@ -348,8 +360,7 @@ class MissFrame:
 
         # Replacing 1's with the index of the column they belong to.
         # Converting to numbers instead of column names for supposed performance boost.
-        bench = bench * range(0, mf_.columns.shape[0])
-
+        bench = bench * list(range(0, mf_.columns.shape[0]))
 
         rows = bench.values
         transactions = []
@@ -365,7 +376,7 @@ class MissFrame:
         item_sets = itemmining.relim(relim_input, min_support=support)
         
         # Converting to DataFrames and getting columns names back.
-        item_sets_df = pd.DataFrame({'Itemset':item_sets.keys(), 'Support': item_sets.values()})
+        item_sets_df = pd.DataFrame({'Itemset':list(item_sets.keys()), 'Support': list(item_sets.values())})
         item_sets_df.Itemset = item_sets_df.Itemset.apply(lambda x: mf_.columns[list(x)].tolist())
 
         
