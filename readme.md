@@ -1,3 +1,8 @@
+![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)
+![Python 3.5](https://img.shields.io/badge/python-3.5-blue.svg)
+![License](https://img.shields.io/badge/license-MIT%20License-blue.svg)
+[![PyPI version](https://badge.fury.io/py/badfish.svg)](https://badge.fury.io/py/badfish)
+
 # Badfish - A missing data wrangling library in Python
 
 Badfish introduces MissFrame, a wrapper over `pandas` `DataFrame`, to wrangle through and investigate missing data. It opens an easy to
