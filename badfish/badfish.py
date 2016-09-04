@@ -40,6 +40,14 @@ class MissFrame:
     df: Pandas DataFrame, required.
         The DataFrame which needs to be analysed for missing values.
 
+    missing_codes: list, optional
+        List of codes used to represent missingness in the dataset.
+        Eg. "missing", "n/a", "Didn't enter" and so on.
+        Codes will be replaced by NaN and treated as missing internally.
+        Warning: Each and every instance of a missing code will be replaced
+        by NaN. Make sure all of them are supposed to be treated as missing
+        and aren't valid data.
+
     Attributes:
     ----------
     data: Pandas DataFrame, The original data.
@@ -57,10 +65,16 @@ class MissFrame:
 
 
 
-    def __init__(self, df):
+    def __init__(self, df, missing_codes):
         # May not need to copy
         self.data =  df.copy()
+
+        if missing_codes: #if list not empty
+            for code in missing_codes:
+                df = df.replace(code, np.nan)
+
         self.miss_frame = df.isnull()
+
     
     def _masked_missframe(self, where, how, columns):
         """
