@@ -79,7 +79,7 @@ If you have any ideas, issues or feature requests, feel free to open an issue, s
 
 
 ## Authors
-[Harsh Nisar](http://github.com/harshnisar) & [Deshana Desai](http://github.com/deshna)
+[Harsh Nisar](http://github.com/harshnisar) & [Deshana Desai](http://github.com/deshanadesai)
 
 
 
